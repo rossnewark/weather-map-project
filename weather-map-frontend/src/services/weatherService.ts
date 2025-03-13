@@ -1,10 +1,10 @@
 import { WeatherData } from '../types/interfaces';
 
-const API_URL = 'http://localhost:5000/api/weather';
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
 
 export const fetchWeatherData = async (): Promise<WeatherData[]> => {
   try {
-    const response = await fetch(API_URL);
+    const response = await fetch(`${API_BASE_URL}/api/weather`);
     if (!response.ok) {
       throw new Error('Failed to fetch weather data');
     }

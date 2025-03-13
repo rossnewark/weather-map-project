@@ -1,11 +1,10 @@
 import { PointOfInterest } from '../types/interfaces';
 
-// This will be your backend API URL for POIs
-const API_URL = 'http://localhost:5000/api/pois';
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
 
 export const fetchPointsOfInterest = async (): Promise<PointOfInterest[]> => {
   try {
-    const response = await fetch(API_URL);
+    const response = await fetch(`${API_BASE_URL}/api/pois`);
     if (!response.ok) {
       throw new Error('Failed to fetch points of interest');
     }
