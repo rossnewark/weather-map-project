@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import path from "path";
-import express from 'express';
+import express, { Request, Response } from 'express';
 import cors from 'cors';
 import axios from 'axios';
 
@@ -16,29 +16,41 @@ app.use(express.json());
 
 // Get the OpenWeatherMap API Key from the .env file
 const API_KEY = process.env.OPENWEATHER_API_KEY;
-console.log("API_KEY:", API_KEY);
+// If you add additional APIs, add their keys here
+const FOURSQUARE_API_KEY = process.env.FOURSQUARE_API_KEY;
 
-// Major cities to fetch weather data for
-const CITIES = [
-  { name: 'New York', country: 'US' },
-  { name: 'Los Angeles', country: 'US' },
-  { name: 'Chicago', country: 'US' },
-  { name: 'Miami', country: 'US' },
-  { name: 'Seattle', country: 'US' },
-  { name: 'Denver', country: 'US' },
+// UK cities to fetch weather data for
+const UK_CITIES = [
   { name: 'London', country: 'GB' },
+  { name: 'Brighton', country: 'GB' },
+  { name: 'Eastbourne', country: 'GB' },
+  { name: 'Hailsham', country: 'GB' },
+  { name: 'Manchester', country: 'GB' },
+  { name: 'Edinburgh', country: 'GB' },
+  { name: 'Cardiff', country: 'GB' },
+  { name: 'Belfast', country: 'GB' },
+  { name: 'Liverpool', country: 'GB' },
+  { name: 'Birmingham', country: 'GB' },
+  { name: 'Bristol', country: 'GB' },
+  { name: 'Leeds', country: 'GB' },
+];
+
+// Keep some international cities too
+const INTERNATIONAL_CITIES = [
+  { name: 'New York', country: 'US' },
   { name: 'Paris', country: 'FR' },
   { name: 'Tokyo', country: 'JP' },
   { name: 'Sydney', country: 'AU' },
-  { name: 'Cairo', country: 'EG' },
-  { name: 'Rio de Janeiro', country: 'BR' },
 ];
 
+// Combine city lists
+const ALL_CITIES = [...UK_CITIES, ...INTERNATIONAL_CITIES];
+
 // Endpoint to fetch weather data
-app.get('/api/weather', async (req, res) => {
+app.get('/api/weather', async (req: Request, res: Response): Promise<void> => {  
   try {
     // Fetch weather data for multiple cities
-    const weatherPromises = CITIES.map(async (city) => {
+    const weatherPromises = ALL_CITIES.map(async (city) => {
       const response = await axios.get(
         `https://api.openweathermap.org/data/2.5/weather?q=${city.name},${city.country}&units=metric&appid=${API_KEY}`
       );
@@ -73,6 +85,45 @@ app.get('/api/weather', async (req, res) => {
   } catch (error) {
     console.error('Error fetching weather data:', error);
     res.status(500).json({ message: 'Failed to fetch weather data' });
+  }
+});
+
+// Endpoint to fetch points of interest
+app.get('/api/pois', async (req: Request, res: Response): Promise<void> => {  
+  try {
+    // Default to central London if no coordinates provided
+    const { lat = '51.5074', lng = '-0.1278' } = req.query as { lat?: string, lng?: string };
+    
+    const response = await axios.get(
+      'https://api.foursquare.com/v3/places/search',
+      {
+        params: {
+          ll: `${lat},${lng}`,
+          radius: 10000, // 10km radius
+          limit: 50,
+          categories: '13000,13065,16000,17000', // Food, Nightlife, Attractions, Transport
+        },
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': FOURSQUARE_API_KEY
+        }
+      }
+    );
+    
+    // Format the response to match our PointOfInterest interface
+    const formattedData = response.data.results.map((poi: any) => ({
+      id: poi.fsq_id,
+      name: poi.name,
+      lat: poi.geocodes.main.latitude,
+      lon: poi.geocodes.main.longitude,
+      category: poi.categories[0]?.name || 'Uncategorized',
+      address: poi.location?.formatted_address
+    }));
+    
+    res.json(formattedData);
+  } catch (error) {
+    console.error('Error fetching points of interest:', error);
+    res.status(500).json({ message: 'Failed to fetch points of interest' });
   }
 });
 
