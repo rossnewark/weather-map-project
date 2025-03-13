@@ -10,25 +10,77 @@ interface POIMarkerProps {
 const POIMarker: React.FC<POIMarkerProps> = ({ poi }) => {
   // Get icon based on POI category
   const getPOIIcon = (category: string) => {
-    // Define colors for different categories
-    const categoryColors: Record<string, string> = {
-      restaurant: '#FF5733',
-      cafe: '#C70039',
-      bar: '#900C3F',
-      attraction: '#581845',
-      hotel: '#FFC300',
-      shop: '#DAF7A6',
-      transport: '#3498DB',
-      default: '#2E4053'
+    // Define FontAwesome icons and colors for different categories
+    const categoryIcons: Record<string, { icon: string, color: string }> = {
+      restaurant: { icon: 'fa-utensils', color: '#FF5733' },
+      cafe: { icon: 'fa-coffee', color: '#C70039' },
+      bar: { icon: 'fa-glass-martini-alt', color: '#900C3F' },
+      attraction: { icon: 'fa-monument', color: '#581845' },
+      hotel: { icon: 'fa-bed', color: '#FFC300' },
+      shop: { icon: 'fa-shopping-bag', color: '#DAF7A6' },
+      transport: { icon: 'fa-bus', color: '#3498DB' },
+      park: { icon: 'fa-tree', color: '#2ECC71' },
+      plaza: { icon: 'fa-landmark', color: '#9B59B6' },
+      structure: { icon: 'fa-building', color: '#34495E' },
+      default: { icon: 'fa-map-marker-alt', color: '#2E4053' }
     };
     
-    const color = categoryColors[category.toLowerCase()] || categoryColors.default;
+    // Category mapping for specific subcategories
+    const categoryMapping: Record<string, string> = {
+      // Restaurant types
+      'french restaurant': 'restaurant',
+      'burger joint': 'restaurant',
+      'fish and chips shop': 'restaurant',
+      'deli': 'restaurant',
+      
+      // Cafe types
+      'café': 'cafe',
+      'coffee shop': 'cafe',
+      'pastry shop': 'cafe',
+      
+      // Shop types
+      'toy store': 'shop',
+      'computers and electronics retail': 'shop',
+      'shopping plaza': 'shop',
+    };
     
+    const lowerCategory = category.toLowerCase();
+    
+    // Try to find direct match first
+    let iconInfo = categoryIcons[lowerCategory];
+    
+    // If no direct match, try to find a mapping
+    if (!iconInfo) {
+      const mappedCategory = categoryMapping[lowerCategory];
+      if (mappedCategory) {
+        iconInfo = categoryIcons[mappedCategory];
+      } else {
+        // If still no match, check if the category contains any of our known categories
+        for (const knownCategory in categoryIcons) {
+          if (lowerCategory.includes(knownCategory)) {
+            iconInfo = categoryIcons[knownCategory];
+            break;
+          }
+        }
+      }
+    }
+    
+    // If still no match found, use default
+    if (!iconInfo) {
+      iconInfo = categoryIcons.default;
+    }
+    
+    // Create the div icon with FontAwesome
     return L.divIcon({
-      className: 'custom-icon poi-icon',
-      html: `<div style="background-color: ${color}; width: 20px; height: 20px; border-radius: 50%; border: 2px solid white;"></div>`,
-      iconSize: [20, 20],
-      iconAnchor: [10, 10],
+      className: 'custom-div-icon',
+      html: `
+        <div style="background-color: white; width: 30px; height: 30px; display: flex; justify-content: center; align-items: center; border-radius: 50%; box-shadow: 0 1px 3px rgba(0,0,0,0.4); border: 2px solid ${iconInfo.color};">
+          <i class="fas ${iconInfo.icon}" style="color: ${iconInfo.color}; font-size: 16px;"></i>
+        </div>
+      `,
+      iconSize: [30, 30],
+      iconAnchor: [15, 15],
+      popupAnchor: [0, -15]
     });
   };
 
