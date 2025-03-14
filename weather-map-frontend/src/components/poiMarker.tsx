@@ -3,13 +3,16 @@ import { Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import { PointOfInterest } from '../types/interfaces';
 
+// Define the props for the POIMarker component
 interface POIMarkerProps {
   poi: PointOfInterest;
 }
 
+// Define the POIMarker component
 const POIMarker: React.FC<POIMarkerProps> = ({ poi }) => {
-  // Get icon based on POI category
+  // Get an icon based on POI category
   const getPOIIcon = (category: string) => {
+
     // Define FontAwesome icons and colors for different categories
     const categoryIcons: Record<string, { icon: string, color: string }> = {
       restaurant: { icon: 'fa-utensils', color: '#FF5733' },
@@ -24,8 +27,9 @@ const POIMarker: React.FC<POIMarkerProps> = ({ poi }) => {
       structure: { icon: 'fa-building', color: '#34495E' },
       default: { icon: 'fa-map-marker-alt', color: '#2E4053' }
     };
+    // More categories can be added as needed
     
-    // Category mapping for specific subcategories
+    // Category mapping for specific subcategories so that we can capture variants
     const categoryMapping: Record<string, string> = {
       // Restaurant types
       'french restaurant': 'restaurant',
@@ -65,7 +69,7 @@ const POIMarker: React.FC<POIMarkerProps> = ({ poi }) => {
       }
     }
     
-    // If still no match found, use default
+    // If still no match found, use the default marker
     if (!iconInfo) {
       iconInfo = categoryIcons.default;
     }
@@ -84,6 +88,8 @@ const POIMarker: React.FC<POIMarkerProps> = ({ poi }) => {
     });
   };
 
+  // Return a marker with a popup for the point of interest
+  // The popup could be extended to show more information or link to an external website
   return (
     <Marker 
       key={poi.id} 

@@ -17,17 +17,20 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
 });
 
+// Define the props for the Map component
 interface MapProps {
   weatherData: WeatherData[];
   pointsOfInterest: PointOfInterest[];
   isLoading: boolean;
 }
 
+// Define the Map component
+// This component renders a map with weather markers and points of interest
 const Map: React.FC<MapProps> = ({ weatherData, pointsOfInterest, isLoading }) => {
   const [center, setCenter] = useState<[number, number]>([51.5074, -0.1278]); // Default to London
 
   useEffect(() => {
-    // Try to get user location when component mounts
+    // Try to get user location when component loads
     const getUserLocation = async () => {
       try {
         const coords = await getUserLocationCoordinates();
@@ -41,6 +44,7 @@ const Map: React.FC<MapProps> = ({ weatherData, pointsOfInterest, isLoading }) =
     getUserLocation();
   }, []);
 
+  // Return a map with weather markers and points of interest
   return (
     <div className="map-container">
       <MapContainer 

@@ -4,9 +4,10 @@ import express, { Request, Response } from 'express';
 import cors from 'cors';
 import axios from 'axios';
 
-// Load .env file
+// Load the .env file
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
+// Crerate an Express app
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -16,7 +17,8 @@ app.use(express.json());
 
 // Get the OpenWeatherMap API Key from the .env file
 const API_KEY = process.env.OPENWEATHER_API_KEY;
-// If you add additional APIs, add their keys here
+
+// Get the Foursquare API Key from the .env file
 const FOURSQUARE_API_KEY = process.env.FOURSQUARE_API_KEY;
 
 // UK cities to fetch weather data for
@@ -34,8 +36,9 @@ const UK_CITIES = [
   { name: 'Bristol', country: 'GB' },
   { name: 'Leeds', country: 'GB' },
 ];
+// More cities, towns could be added to the list or make use of an API to fetch the list of cities
 
-// Keep some international cities too
+// Specify some international cities too, they might have interesting POI & Weather data
 const INTERNATIONAL_CITIES = [
   { name: 'New York', country: 'US' },
   { name: 'Paris', country: 'FR' },
@@ -43,10 +46,10 @@ const INTERNATIONAL_CITIES = [
   { name: 'Sydney', country: 'AU' },
 ];
 
-// Combine city lists
+// Combine the cities into a single array
 const ALL_CITIES = [...UK_CITIES, ...INTERNATIONAL_CITIES];
 
-// Endpoint to fetch weather data
+// Endpoint to get weather data
 app.get('/api/weather', async (req: Request, res: Response): Promise<void> => {  
   try {
     // Fetch weather data for multiple cities
@@ -83,12 +86,12 @@ app.get('/api/weather', async (req: Request, res: Response): Promise<void> => {
 
     res.json(formattedData);
   } catch (error) {
-    console.error('Error fetching weather data:', error);
-    res.status(500).json({ message: 'Failed to fetch weather data' });
+    console.error('Error getting weather data:', error);
+    res.status(500).json({ message: 'Failed to get weather data' });
   }
 });
 
-// Endpoint to fetch points of interest
+// Endpoint to get points of interest
 app.get('/api/pois', async (req: Request, res: Response): Promise<void> => {  
   try {
     // Default to central London if no coordinates provided
@@ -101,7 +104,7 @@ app.get('/api/pois', async (req: Request, res: Response): Promise<void> => {
           ll: `${lat},${lng}`,
           radius: 10000, // 10km radius
           limit: 50,
-          categories: '13000,13065,16000,17000', // Food, Nightlife, Attractions, Transport
+          categories: '13000,13065,16000', // Food, Nightlife, Attractions - this could be expanded
         },
         headers: {
           'Accept': 'application/json',
@@ -122,8 +125,8 @@ app.get('/api/pois', async (req: Request, res: Response): Promise<void> => {
     
     res.json(formattedData);
   } catch (error) {
-    console.error('Error fetching points of interest:', error);
-    res.status(500).json({ message: 'Failed to fetch points of interest' });
+    console.error('Error getting points of interest:', error);
+    res.status(500).json({ message: 'Failed to get points of interest' });
   }
 });
 

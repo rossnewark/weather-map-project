@@ -2,6 +2,7 @@ import React from 'react';
 import { useMap } from 'react-leaflet';
 import { getUserLocationCoordinates } from '../services/locationService';
 
+// Define the props for the LocationButton component
 interface LocationButtonProps {
   setCenter: React.Dispatch<React.SetStateAction<[number, number]>>;
 }
@@ -9,6 +10,7 @@ interface LocationButtonProps {
 const LocationButton: React.FC<LocationButtonProps> = ({ setCenter }) => {
   const map = useMap();
 
+  // When the button is clicked, get the user's location and center the map on it
   const handleLocationClick = async () => {
     try {
       const [lat, lng] = await getUserLocationCoordinates();
@@ -20,6 +22,7 @@ const LocationButton: React.FC<LocationButtonProps> = ({ setCenter }) => {
     }
   };
 
+  // Return a button that, when clicked, will center the map on the user's location
   return (
     <div className="leaflet-top leaflet-right">
       <div className="leaflet-control leaflet-bar">

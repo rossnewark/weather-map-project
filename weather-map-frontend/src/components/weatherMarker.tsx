@@ -4,12 +4,14 @@ import L from 'leaflet';
 import { WeatherData } from '../types/interfaces';
 import { getWeatherIconUrl } from '../services/weatherService';
 
+// Define the props for the WeatherMarker component
 interface WeatherMarkerProps {
   weatherData: WeatherData;
 }
 
+// Define the WeatherMarker component
 const WeatherMarker: React.FC<WeatherMarkerProps> = ({ weatherData }) => {
-  // Get appropriate icon based on weather condition
+  // Get an appropriate icon based on weather condition
   const getWeatherIcon = (condition: string, iconCode: string) => {
     // Define weather type configurations with FontAwesome icons and colors
     const weatherTypes: Record<string, { icon: string, color: string, bgColor: string }> = {
@@ -29,7 +31,7 @@ const WeatherMarker: React.FC<WeatherMarkerProps> = ({ weatherData }) => {
       'mist': { icon: 'fa-smog', color: 'white', bgColor: '#AAAAAA' },
       'haze': { icon: 'fa-smog', color: 'white', bgColor: '#AAAAAA' },
       
-      // Snow conditions
+      // Snowy conditions
       'snow': { icon: 'fa-snowflake', color: 'white', bgColor: '#A5F2F3' },
       'sleet': { icon: 'fa-snowflake', color: 'white', bgColor: '#7FBCBD' },
       'hail': { icon: 'fa-icicles', color: 'white', bgColor: '#7FBCBD' },
@@ -60,7 +62,7 @@ const WeatherMarker: React.FC<WeatherMarkerProps> = ({ weatherData }) => {
       iconInfo = weatherTypes.default;
     }
     
-    // Adjust icon for nighttime if applicable
+    // Adjust icon for night time if applicable
     if (isNight) {
       if (iconInfo.icon === 'fa-sun') {
         iconInfo.icon = 'fa-moon';
@@ -71,7 +73,7 @@ const WeatherMarker: React.FC<WeatherMarkerProps> = ({ weatherData }) => {
       }
     }
     
-    // Create temperature text (show rounded temp in °C)
+    // Create temperature text (show rounded temp in °C) - could be extended to °F if needed for internationalization
     const temp = Math.round(weatherData.main.temp);
     
     // Get temperature color based on value
@@ -114,6 +116,7 @@ const WeatherMarker: React.FC<WeatherMarkerProps> = ({ weatherData }) => {
     });
   };
 
+  // Return a marker with a popup for the weather data
   return (
     <Marker 
       key={weatherData.id} 
