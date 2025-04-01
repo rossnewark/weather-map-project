@@ -18,6 +18,7 @@ export const getPointsOfInterest = async (): Promise<PointOfInterest[]> => {
   }
 };
 
+
 // Function to categorize POIs by type
 export const categorizePOIs = (pois: PointOfInterest[]): Record<string, PointOfInterest[]> => {
   return pois.reduce((acc, poi) => {
